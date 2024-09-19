@@ -12,10 +12,10 @@ class Dogfight:
         self.frame = None
         self.mouse_x = 0
         self.mouse_y = 0
-        self.square_size = 100  # Başlangıçta sabit kare boyutu
-        self.min_square_size = 50  # Kare için minimum boyut
-        self.max_square_size = 300  # Kare için maksimum boyut
-        self.yolo()  # Fonksiyonu bu isimle bırakıyoruz
+        self.square_size = 100  # Fixed frame size at startup
+        self.min_square_size = 50 # Minimum size for frame
+        self.max_square_size = 300 # Maximum size for frame
+        self.yolo() # Leave the function with this name
 
     def yolo(self):
         self.prev_time = time.time()
@@ -32,15 +32,15 @@ class Dogfight:
 
            # self.frame = cv2.resize(self.frame, (640, 640))
 
-            self.kareciz()  # Fare ile gezilen yerde şekil oluştur
-            self.draw_center_square()  # Ekranın ortasında sabit kare çiz
-
+            self.kareciz() # Create a shape where the mouse is hovering
+            self.draw_center_square()  # Draw a fixed square in the middle of the screen
+            
             if self.tracking_active and self.mosse_tracker is not None:
                 self.mosse()
 
             self.fps()
 
-            # Tracker koordinatlarını sol üst köşeye ekle
+            # Add tracker coordinates to the top left corner
             self.show_tracker_coordinates()
 
             cv2.imshow('YOLOv5 with MOSSE', self.frame)
@@ -50,94 +50,94 @@ class Dogfight:
                 break
             elif key == ord('r'):
                 self.reset_tracking()
-            elif key == 81:  # Sol ok tuşu
-                self.square_size -= 10  # Kare boyutunu azalt
-            elif key == 83:  # Sağ ok tuşu
-                self.square_size += 10  # Kare boyutunu artır
+            elif key == 81:  # Left arrow key
+                self.square_size -= 10 # Reduce frame size
+            elif key == 83:  # Right arrow key
+                self.square_size += 10  # Increase frame size
 
-            # Kare boyutunu minimum ve maksimum sınırlar içinde tut
+            # Keep frame size within minimum and maximum limits
             self.square_size = max(self.min_square_size, min(self.square_size, self.max_square_size))
 
     def kareciz(self):
-        # Kareyi fare hareketine göre merkezde çiz
+       # Draw the square in the center according to the mouse movement
         top_left_x = self.mouse_x - self.square_size // 2
         top_left_y = self.mouse_y - self.square_size // 2
         bottom_right_x = self.mouse_x + self.square_size // 2
         bottom_right_y = self.mouse_y + self.square_size // 2
 
-        # Ekranda köşe çizgileri çiz
-        corner_size = 20  # Köşe çizgilerinin uzunluğu
+       # Draw corner lines on the screen
+        corner_size = 20  # Length of corner lines
 
-        # Üst sol köşe çizgileri
+        # Upper left corner lines
         cv2.line(self.frame, (top_left_x - corner_size, top_left_y - corner_size),
                  (top_left_x + corner_size, top_left_y - corner_size), (0, 255, 0), 2)
         cv2.line(self.frame, (top_left_x - corner_size, top_left_y - corner_size),
                  (top_left_x - corner_size, top_left_y + corner_size), (0, 255, 0), 2)
 
-        # Üst sağ köşe çizgileri
+       # Top right corner lines
         cv2.line(self.frame, (bottom_right_x - corner_size, top_left_y - corner_size),
                  (bottom_right_x + corner_size, top_left_y - corner_size), (0, 255, 0), 2)
         cv2.line(self.frame, (bottom_right_x + corner_size, top_left_y - corner_size),
                  (bottom_right_x + corner_size, top_left_y + corner_size), (0, 255, 0), 2)
 
-        # Alt sol köşe çizgileri
+        # Bottom left corner lines
         cv2.line(self.frame, (top_left_x - corner_size, bottom_right_y + corner_size),
                  (top_left_x + corner_size, bottom_right_y + corner_size), (0, 255, 0), 2)
         cv2.line(self.frame, (top_left_x - corner_size, bottom_right_y + corner_size),
                  (top_left_x - corner_size, bottom_right_y - corner_size), (0, 255, 0), 2)
 
-        # Alt sağ köşe çizgileri
+       # Bottom right corner lines
         cv2.line(self.frame, (bottom_right_x - corner_size, bottom_right_y + corner_size),
                  (bottom_right_x + corner_size, bottom_right_y + corner_size), (0, 255, 0), 2)
         cv2.line(self.frame, (bottom_right_x + corner_size, bottom_right_y - corner_size),
                  (bottom_right_x + corner_size, bottom_right_y + corner_size), (0, 255, 0), 2)
 
     def draw_center_square(self):
-        # Ekranın ortasında sabit bir kare çiz
+        # Draw a fixed square in the middle of the screen
         height, width, _ = self.frame.shape
         center_x, center_y = width // 2, height // 2
 
-        # Sabit köşeli kare için boyut
+        # Dimension for fixed corner square
         fixed_square_size = 300
         top_left_x = center_x - fixed_square_size // 2
         top_left_y = center_y - fixed_square_size // 2
         bottom_right_x = center_x + fixed_square_size // 2
         bottom_right_y = center_y + fixed_square_size // 2
 
-        # Köşeleri çiz
-        corner_size = 20  # Köşe çizgilerinin uzunluğu
+        # Draw corners
+        corner_size = 20  # Length of corner lines
 
-        # Üst sol köşe çizgileri
+        # Upper left corner lines
         cv2.line(self.frame, (top_left_x - corner_size, top_left_y - corner_size),
                  (top_left_x + corner_size, top_left_y - corner_size), (255, 0, 0), 2)
         cv2.line(self.frame, (top_left_x - corner_size, top_left_y - corner_size),
                  (top_left_x - corner_size, top_left_y + corner_size), (255, 0, 0), 2)
 
-        # Üst sağ köşe çizgileri
+       # Top right corner lines
         cv2.line(self.frame, (bottom_right_x - corner_size, top_left_y - corner_size),
                  (bottom_right_x + corner_size, top_left_y - corner_size), (255, 0, 0), 2)
         cv2.line(self.frame, (bottom_right_x + corner_size, top_left_y - corner_size),
                  (bottom_right_x + corner_size, top_left_y + corner_size), (255, 0, 0), 2)
 
-        # Alt sol köşe çizgileri
+        # Bottom left corner lines
         cv2.line(self.frame, (top_left_x - corner_size, bottom_right_y + corner_size),
                  (top_left_x + corner_size, bottom_right_y + corner_size), (255, 0, 0), 2)
         cv2.line(self.frame, (top_left_x - corner_size, bottom_right_y + corner_size),
                  (top_left_x - corner_size, bottom_right_y - corner_size), (255, 0, 0), 2)
 
-        # Alt sağ köşe çizgileri
+       # Bottom right corner lines
         cv2.line(self.frame, (bottom_right_x - corner_size, bottom_right_y + corner_size),
                  (bottom_right_x + corner_size, bottom_right_y + corner_size), (255, 0, 0), 2)
         cv2.line(self.frame, (bottom_right_x + corner_size, bottom_right_y - corner_size),
                  (bottom_right_x + corner_size, bottom_right_y + corner_size), (255, 0, 0), 2)
 
     def mouse_move(self, event, x, y, flags, param):
-        # Fare hareket ettikçe pozisyonu güncelle
+       # Update position as mouse moves
         self.mouse_x = x
         self.mouse_y = y
 
         if event == cv2.EVENT_LBUTTONDOWN:
-            # Sol tık ile o anki kareyi al ve takip etmeye başla
+            # Left click to grab the current frame and start following
             self.bbox = (self.mouse_x - self.square_size // 2, self.mouse_y - self.square_size // 2, self.square_size,
                          self.square_size)
             self.activate_mosse()
@@ -162,8 +162,8 @@ class Dogfight:
         current_time = time.time()
         elapsed_time = current_time - self.prev_time
 
-        # Daha kısa sürede FPS hesaplaması
-        if elapsed_time >= 0.1:  # 0.1 saniyede bir hesapla
+        # Faster FPS calculation
+        if elapsed_time >= 0.1:  # Calculate every 0.1 seconds
             self.fps_display = self.frame_count / elapsed_time
             self.frame_count = 0
             self.prev_time = current_time
@@ -178,7 +178,7 @@ class Dogfight:
                 x, y, w, h = [int(v) for v in bbox]
                 coordinates_text = f'Tracker X: {x}, Y: {y}'
 
-                # Yazı arka planı ve kenarlık oluşturma
+                # Creating text background and border
                 text_size, _ = cv2.getTextSize(coordinates_text, cv2.FONT_HERSHEY_COMPLEX, 0.7, 2)
                 text_width, text_height = text_size
                 box_coords = (10, 200)
